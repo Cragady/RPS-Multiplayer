@@ -10,3 +10,15 @@
 //manage sessions to make sure there are only two connected at once
 //have it so multiple people can have matches
 //have option to face automatic process
+
+var config = {
+    apiKey: "AIzaSyASnKUFaSBLwrLIJd4R5dNgYbNHf2jCJMk",
+    authDomain: "rps-handler.firebaseapp.com",
+    databaseURL: "https://rps-handler.firebaseio.com",
+    projectId: "rps-handler",
+    storageBucket: "rps-handler.appspot.com",
+    messagingSenderId: "458167033258"
+  };
+  firebase.initializeApp(config);
+
+var database = firebase.database();
