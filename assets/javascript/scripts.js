@@ -10,4 +10,3 @@
 //manage sessions to make sure there are only two connected at once
 //have it so multiple people can have matches
 //have option to face automatic process
-console.log("Hello, World!");
