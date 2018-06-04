@@ -22,6 +22,7 @@ var pOneCook = false;
 var pTwoSet;
 var pTwoCook = false;
 var cookSet;
+var gameStart = false;
 var move1 = 1;
 
 var config = {
@@ -75,15 +76,31 @@ database.ref('player2').on('value', function(snapshot){
 });
 
 database.ref().on("value", function(snapshot){
-  
-  // if(snapshot.child("pOneCook").exists()){
-  // pOneSet = snapshot.val().player1.pOneSet;
-  // pOneCook = snapshot.val().player1.pOneCook;
-  // }
-  // if(snapshot.child("pTwoCook").exists()){
-  // pTwoSet = snapshot.val().player2.pTwoSet;
-  // };
 
+  if(snapshot.child('player1').exists() && snapshot.child('player2').exists()){
+    gameStart = true;
+    database.ref('gameStatus').set({
+      gameStart: gameStart
+    });
+  } else if(snapshot.child('gameStatus').val().gameStart === true){
+    $(window).on("unload", function(){
+      console.log("user disconnect");
+      gameStart = false;
+      database.child('gameStatus').set({
+        gameStart: gameStart
+      });
+      console.log(gameStart);
+    });
+    $(window).on("beforeunload", function(){
+      console.log("user disconnect");
+      gameStart = false;
+      database.child('gameStatus').set({
+        gameStart: gameStart
+      });
+      console.log(gameStart);
+    });
+    
+  };
     
 
   if(pOneCook === "1"){
