@@ -17,10 +17,12 @@ var playerOne = "Player 1";
 var playerTwo = "Player 2";
 var move1 = false;
 var move2 = false;
-var pOneSet = false;
+var pOneSet;
 var pOneCook;
-var pTwoSet = false;
+var pTwoSet;
 var pTwoCook;
+var cookSet;
+var move1 = 1;
 
 var config = {
     apiKey: "AIzaSyASnKUFaSBLwrLIJd4R5dNgYbNHf2jCJMk",
@@ -52,40 +54,56 @@ function readCookie(a) {
   return b ? b.pop() : '';
 }
 
-$("#p1-set").click(function(event){
-  event.preventDefault();
-  if(pOneSet === true){
-    return;
+database.ref().on("value", function(snapshot){
+
+  
+  
+  
+  if(snapshot.child("pOneCook").exists()){
+  pOneSet = snapshot.val().player1.pOneSet;
+  pOneCook = snapshot.val().player1.pOneCook;
+  }
+  if(snapshot.child("pTwoCook").exists()){
+  pTwoSet = snapshot.val().player2.pTwoSet;
   };
-  document.cookie = "player=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
-  document.cookie = "player=1";
-  pOneCook = readCookie("player");
-  database.ref().set({
-    pOneCook: pOneCook
+
+  if(pOneCook === undefined){
+    database.ref("player1").set(pOneSet=false);
+  };
+  
+  $("#p1-set").click(function(event){
+    event.preventDefault();
+    if(cookSet || pOneSet){
+      return;
+    };
+    document.cookie = "player=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+    document.cookie = "player=1";
+    pOneCook = readCookie("player");
+    database.ref("player1").set({
+      pOneCook: pOneCook,
+      pOneWins: 0,
+      pOneSet: true
+    });
+    cookSet = true;
   });
-  console.log(document.cookie);
-});
-
-$("#p2-set").click(function(){
-  event.preventDefault();
-  if(pTwoSet === true){
-    return;
-  };
-  document.cookie = "player=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
-  document.cookie = "player=" + 2;
-  pTwoCook = readCookie("player");
-  database.ref().set({
-    pTwoCook: pTwoCook
+  
+  $("#p2-set").click(function(event){
+    event.preventDefault();
+    if(cookSet || pTwoSet){
+      return;
+    };
+    document.cookie = "player=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+    document.cookie = "player=2";
+    pTwoCook = readCookie("player");
+    database.ref("player2").set({
+      pTwoCook: pTwoCook,
+      pTwoWins: 0,
+      pTwoSet: true
+    });
+    cookSet = true;
   })
-})
 
-// database.ref().on("value", function(snapshot){
-
-//   if (snapshot.child("move1").exists() && snapshot.child("move2").exists()){
-
-//   };
-
-// });
+});
 
 // document.onkeyup = function(event){
 //   var pOneGuess = event.key;
