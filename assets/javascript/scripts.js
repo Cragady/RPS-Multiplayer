@@ -56,11 +56,23 @@ function readCookie(a) {
 // });
 
 database.ref('player1').on('value', function(snapshot){
-  console.log(snapshot.val().pOneCook);
     if(snapshot.child("pOneCook").exists() && (pOneCook === false)){
         pOneCook = snapshot.val().pOneCook;
     };
-})
+    if((!snapshot.child("pOneCook").exists()) && (pOneCook === true)){
+      pOneCook = false;
+    };
+});
+
+database.ref('player2').on('value', function(snapshot){
+  
+  if(snapshot.child("pTwoCook").exists() && (pTwoCook === false)){
+    pTwoCook = snapshot.val().pTwoCook;
+  };
+  if((!snapshot.child("pTwoCook").exists()) && (pTwoCook === true)){
+    pTwoCook = false;
+  };
+});
 
 database.ref().on("value", function(snapshot){
   
@@ -83,11 +95,21 @@ database.ref().on("value", function(snapshot){
     });
   };
   
+  if(pTwoCook === "2"){
+    $(window).on("unload", function(){
+      database.ref("player2").set({});
+    });
+    $(window).on("beforeunload", function(){
+      database.ref("player2").set({});
+    });
+  };
+
   $("#p1-set").click(function(event){
     event.preventDefault();
-    if(cookSet){
+    if(cookSet || pOneCook){
       return;
     };
+    console.log("clicked");
     document.cookie = "player=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
     document.cookie = "player=1";
     pOneCook = readCookie("player");
@@ -101,9 +123,10 @@ database.ref().on("value", function(snapshot){
   
   $("#p2-set").click(function(event){
     event.preventDefault();
-    if(cookSet){
+    if(cookSet || pTwoCook){
       return;
     };
+    console.log("clicked");
     document.cookie = "player=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
     document.cookie = "player=2";
     pTwoCook = readCookie("player");
