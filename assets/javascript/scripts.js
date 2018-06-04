@@ -55,6 +55,13 @@ function readCookie(a) {
 //   //};
 // });
 
+database.ref('player1').on('value', function(snapshot){
+  console.log(snapshot.val().pOneCook);
+    if(snapshot.child("pOneCook").exists() && (pOneCook === false)){
+        pOneCook = snapshot.val().pOneCook;
+    };
+})
+
 database.ref().on("value", function(snapshot){
   
   // if(snapshot.child("pOneCook").exists()){
@@ -65,14 +72,7 @@ database.ref().on("value", function(snapshot){
   // pTwoSet = snapshot.val().player2.pTwoSet;
   // };
 
-  $(document).on("load", function(){
-    if(snapshot.child("pOneCook").exists()){
-      if(pOneCook === false){
-        pOneCook = true;
-      }
-    };
-  })
-  
+    
 
   if(pOneCook === "1"){
     $(window).on("unload", function(){
@@ -85,7 +85,7 @@ database.ref().on("value", function(snapshot){
   
   $("#p1-set").click(function(event){
     event.preventDefault();
-    if(cookSet || pOneSet){
+    if(cookSet){
       return;
     };
     document.cookie = "player=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
@@ -101,7 +101,7 @@ database.ref().on("value", function(snapshot){
   
   $("#p2-set").click(function(event){
     event.preventDefault();
-    if(cookSet || pTwoSet){
+    if(cookSet){
       return;
     };
     document.cookie = "player=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
