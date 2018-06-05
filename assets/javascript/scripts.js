@@ -24,6 +24,7 @@ var pTwoWins;
 var pOneWins;
 var textOut;
 var textIn;
+var stopper = false;
 
 var config = {
   apiKey: "AIzaSyASnKUFaSBLwrLIJd4R5dNgYbNHf2jCJMk",
@@ -63,14 +64,16 @@ database.ref('player2').on('value', function(snapshot){
 
 database.ref().on("value", function(snapshot){
 
-  if(snapshot.child("chatUpdate").exists()){
-    textOut = snapshot.child("chatUpdate").val().chat;
-    newPelm = $("<option>").text(textOut);
-    $("#chat-box").prepend(newPelm);
-    database.ref("chatUpdate").update({
-      chat: ""
-    });
-  }
+  if(cookSet === true){
+    if(snapshot.child("chatUpdate").exists()){
+      textOut = snapshot.child("chatUpdate").val().chat;
+      newPelm = $("<option>").text(textOut);
+      $("#chat-box").prepend(newPelm);
+      database.ref("chatUpdate").update({
+        chat: ""
+      });
+    };
+  };
 
   if(snapshot.child('gameStatus').exists()){
     gameStart = snapshot.child('gameStatus').val().gameStart;
@@ -259,7 +262,13 @@ playerStatusSetter = function(playTarget, playData, playMoveStatus){
 document.onkeyup = function(event){
       
   //setup for winner checking and setting victoryStatus
+  //look into using buttons instead for user/opponent guess
   if(guessed === false){
+    if(event.target.nodeName.toLowerCase() === "input"){
+      console.log("blocked");
+      return;
+    };
+    console.log("not");
     userGuess = event.key;
     if((userGuess === "r") || (userGuess === "p") || (userGuess === "s")){
       guessed = true;
@@ -294,6 +303,9 @@ document.onkeyup = function(event){
 };
 
 document.onkeydown = function(eventTwo){
+
+  
+
   //setup for chatbox entry
   key = eventTwo.which || eventTwo.keyCode;
 
@@ -307,7 +319,6 @@ document.onkeydown = function(eventTwo){
     
   }
 };
-
 // database.ref("chatUpdate").on("value", function(snapshot){
 //   textOut = snapshot.val().chat;
 //   console.log(textOut);
