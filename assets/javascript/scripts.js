@@ -27,8 +27,6 @@ var victoryStatus = "";
 var playerNum;
 var otherNum;
 var guessed = false;
-var pOneWins;
-var pTwoWins;
 
 var config = {
   apiKey: "AIzaSyASnKUFaSBLwrLIJd4R5dNgYbNHf2jCJMk",
@@ -182,6 +180,10 @@ database.ref().on("value", function(snapshot){
 
   if(snapshot.child(playerNum).exists()){
     victoryStatus = snapshot.child(playerNum).val().victoryStatus;
+    if(guessed === true){
+      vicStatusChecker();
+    };
+    
   };
 
 
@@ -190,8 +192,7 @@ database.ref().on("value", function(snapshot){
 vicStatusChecker = function(){
   if (victoryStatus === "victory"){
     console.log("hooray!");
-    userScore++;
-    database.ref(playerNum).update({scoreTracker: userScore});
+    database.ref(playerNum).update({scoreTracker: userScore++});
     database.ref(playerNum).update({victoryStatus: ""});
     guessed = false;
     victoryStatus ="";
@@ -223,27 +224,28 @@ document.onkeyup = function(event){
 
         if(victory){
           victoryStatus = "victory";
-          userScore += 1;
           database.ref(playerNum).update({victoryStatus: victoryStatus});
-          database.ref(playerNum).update({scoreTracker: userScore});
           database.ref(otherNum).update({victoryStatus: "defeat"});
-          guessed = false;
-          database.ref(playerNum).update({victoryStatus: ""});
         } else if(defeat){
           victoryStatus = "defeat";
           database.ref(playerNum).update({victoryStatus: victoryStatus});
           database.ref(otherNum).update({victoryStatus: "victory"});
-          database.ref(playerNum).update({victoryStatus: ""});
         } else if(same){
           victoryStatus = "same";
           database.ref(playerNum).update({victoryStatus: victoryStatus});
           database.ref(otherNum).update({victoryStatus: victoryStatus});
-          database.ref(playerNum).update({victoryStatus: ""});
         };
       };
     };
 };
 
 
+// database.ref().set({
+//   currentUser: userId
+// });
+
+// database.ref(currentUser).push({
+//   userScore: userScore
+// });
 
 // $("#score-keeper").text(userScore);
