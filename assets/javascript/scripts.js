@@ -11,7 +11,7 @@
 //have it so multiple people can have matches
 //have option to face automatic process
 
-var userScore = 0;
+var userScore = 1;
 var scoreTracker;
 var opponentScore = 0;
 var opponentGuess;
@@ -27,6 +27,10 @@ var victoryStatus = "";
 var playerNum;
 var otherNum;
 var guessed = false;
+var moveTracker;
+var moveOtherTracker;
+var pOneWins;
+var pTwoWins;
 
 var config = {
   apiKey: "AIzaSyASnKUFaSBLwrLIJd4R5dNgYbNHf2jCJMk",
@@ -80,8 +84,7 @@ database.ref('player2').on('value', function(snapshot){
 
 database.ref().on("value", function(snapshot){
 
-  gameStart = snapshot.child('gameStatus').val().gameStart;
-  
+  gameStart = snapshot.child('gameStatus').val().gameStart;  
   
   if(pOneCook === "1"){
     opponentGuess = snapshot.child("player2").val().pTwoMove;
@@ -136,6 +139,7 @@ database.ref().on("value", function(snapshot){
     });
   };
 
+
   $("#p1-set").click(function(event){
     event.preventDefault();
     if(cookSet || pOneCook){
@@ -154,8 +158,11 @@ database.ref().on("value", function(snapshot){
     cookSet = true;
     playerNum = "player1";
     otherNum = "player2";
-    scoreTracker = [pOneWins];
+    scoreTracker = "pOneWins";
+    moveTracker = "pOneMove";
+    moveOtherTracker = "pTwoMove";
   });
+
   
   $("#p2-set").click(function(event){
     event.preventDefault();
@@ -175,11 +182,13 @@ database.ref().on("value", function(snapshot){
     cookSet = true;
     playerNum = "player2";
     otherNum = "player1";
-    scoreTracker = [pTwoWins];
+    scoreTracker = "pTwoWins";
+    moveTracker = "pTwoMove";
+    moveOtherTracker = "pOneMove";
   });
 
   if(snapshot.child(playerNum).exists()){
-    victoryStatus = snapshot.child(playerNum).val().victoryStatus;
+    // victoryStatus = snapshot.child(playerNum).val().victoryStatus;
     if(guessed === true){
       vicStatusChecker();
     };
@@ -192,14 +201,29 @@ database.ref().on("value", function(snapshot){
 vicStatusChecker = function(){
   if (victoryStatus === "victory"){
     console.log("hooray!");
-    database.ref(playerNum).update({scoreTracker: userScore++});
+    database.ref(playerNum).update({[scoreTracker]: userScore});
     database.ref(playerNum).update({victoryStatus: ""});
-    guessed = false;
+    database.ref(playerNum).update({[moveTracker]: ""});
+    database.ref(otherNum).update({[moveOtherTracker]: ""});
+    userGuess ="";
     victoryStatus ="";
+    guessed = false;
   } else if (victoryStatus === "defeat"){
     console.log("boo");
+    database.ref(playerNum).update({victoryStatus: ""});
+    database.ref(playerNum).update({[moveTracker]: ""});
+    database.ref(otherNum).update({[moveOtherTracker]: ""});
+    userGuess ="";
+    victoryStatus = "";
+    guessed = false;
   } else if (victoryStatus === "same"){
     console.log("ehh");
+    database.ref(playerNum).update({victoryStatus: ""});
+    database.ref(playerNum).update({[moveTracker]: ""});
+    database.ref(otherNum).update({[moveOtherTracker]: ""});
+    userGuess ="";
+    victoryStatus = "";
+    guessed = false;
   };
 }
 
@@ -224,16 +248,20 @@ document.onkeyup = function(event){
 
         if(victory){
           victoryStatus = "victory";
+          userScore++;
           database.ref(playerNum).update({victoryStatus: victoryStatus});
           database.ref(otherNum).update({victoryStatus: "defeat"});
+          guessed = false;
         } else if(defeat){
           victoryStatus = "defeat";
           database.ref(playerNum).update({victoryStatus: victoryStatus});
           database.ref(otherNum).update({victoryStatus: "victory"});
+          guessed = false;
         } else if(same){
           victoryStatus = "same";
           database.ref(playerNum).update({victoryStatus: victoryStatus});
           database.ref(otherNum).update({victoryStatus: victoryStatus});
+          guessed = false;
         };
       };
     };
