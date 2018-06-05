@@ -65,7 +65,8 @@ database.ref().on("value", function(snapshot){
 
   if(snapshot.child("chatUpdate").exists()){
     textOut = snapshot.child("chatUpdate").val().chat;
-    console.log(textOut);
+    newPelm = $("<option>").text(textOut);
+    $("#chat-box").prepend(newPelm);
     database.ref("chatUpdate").update({
       chat: ""
     });
