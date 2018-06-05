@@ -43,24 +43,10 @@ var config = {
 
 var database = firebase.database();
 
-// var connectCheck = database.child('player1');
-// connectCheck.onDisconnect().remove();
-// connectCheck.on('value', function(ss){
-//   // if( ss.val() !== 'online'){
-//   //   ss.ref().set('online');
-//   // }
-// });
-
 function readCookie(a) {
   var b = document.cookie.match('(^|;)\\s*' + a + '\\s*=\\s*([^;]+)');
   return b ? b.pop() : '';
 }
-
-// $(window).on("unload", function(){
-//   //if(pOneCook === "1"){
-//     pOneCook = undefined;
-//   //};
-// });
 
 database.ref('player1').on('value', function(snapshot){
     if(snapshot.child("pOneCook").exists() && (pOneCook === false)){
@@ -250,7 +236,6 @@ document.onkeyup = function(event){
 
         if(victory){
           victoryStatus = "victory";
-          // userScore ++;
           database.ref(playerNum).update({victoryStatus: victoryStatus});
           database.ref(otherNum).update({victoryStatus: "defeat"});
         } else if(defeat){
@@ -265,14 +250,5 @@ document.onkeyup = function(event){
       };
     };
 };
-
-
-// database.ref().set({
-//   currentUser: userId
-// });
-
-// database.ref(currentUser).push({
-//   userScore: userScore
-// });
 
 // $("#score-keeper").text(userScore);
