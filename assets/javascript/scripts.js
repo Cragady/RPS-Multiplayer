@@ -192,7 +192,7 @@ database.ref().on("value", function(snapshot){
 vicStatusChecker = function(){
   if (victoryStatus === "victory"){
     console.log("hooray!");
-    database.ref(playerNum).update({scoreTracker: userScore++});
+    database.ref(playerNum).update({scoreTracker: userScore});
     database.ref(playerNum).update({victoryStatus: ""});
     guessed = false;
     victoryStatus ="";
@@ -224,6 +224,7 @@ document.onkeyup = function(event){
 
         if(victory){
           victoryStatus = "victory";
+          userScore++;
           database.ref(playerNum).update({victoryStatus: victoryStatus});
           database.ref(otherNum).update({victoryStatus: "defeat"});
         } else if(defeat){
