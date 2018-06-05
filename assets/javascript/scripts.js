@@ -9,8 +9,6 @@ var userScore = 0;
 var scoreTracker;
 var opponentScore = 0;
 var opponentGuess;
-var playerOne = "Player 1";
-var playerTwo = "Player 2";
 var pOneMove;
 var pTwoMove;
 var pOneCook = false;
@@ -63,7 +61,9 @@ database.ref('player2').on('value', function(snapshot){
 
 database.ref().on("value", function(snapshot){
 
-  gameStart = snapshot.child('gameStatus').val().gameStart;
+  if(snapshot.child('gameStatus').exists()){
+    gameStart = snapshot.child('gameStatus').val().gameStart;
+  };
   
   /*the following two if statements gives the scripts
   the other player's score to compare against*/
@@ -94,13 +94,13 @@ database.ref().on("value", function(snapshot){
       if(snapshot.child('gameStatus').val().gameStart === true){
         $(window).on("unload", function(){
           gameStart = false;
-          database.ref('gameStatus').set({
+          database.ref('gameStatus').update({
             gameStart: false
           });
         });
         $(window).on("beforeunload", function(){
           gameStart = false;
-          database.ref('gameStatus').set({
+          database.ref('gameStatus').update({
             gameStart: false
           });
         });
