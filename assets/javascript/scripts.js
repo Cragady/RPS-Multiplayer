@@ -201,7 +201,7 @@ vicStatusChecker = function(){
   } else if (victoryStatus === "same"){
     console.log("ehh");
   };
-}
+};
 
 document.onkeyup = function(event){
    
