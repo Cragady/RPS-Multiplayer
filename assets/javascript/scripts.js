@@ -11,16 +11,15 @@
 //have it so multiple people can have matches
 //have option to face automatic process
 
-var userScore = "";
-var opponentScore = "";
+var userScore = 0;
+var scoreTracker;
+var opponentScore = 0;
 var opponentGuess;
 var playerOne = "Player 1";
 var playerTwo = "Player 2";
 var pOneMove;
 var pTwoMove;
-var pOneSet;
 var pOneCook = false;
-var pTwoSet;
 var pTwoCook = false;
 var cookSet;
 var gameStart = false;
@@ -28,6 +27,8 @@ var victoryStatus = "";
 var playerNum;
 var otherNum;
 var guessed = false;
+var pOneWins;
+var pTwoWins;
 
 var config = {
   apiKey: "AIzaSyASnKUFaSBLwrLIJd4R5dNgYbNHf2jCJMk",
@@ -149,13 +150,13 @@ database.ref().on("value", function(snapshot){
     database.ref("player1").set({
       pOneCook: true,
       pOneWins: 0,
-      pOneSet: true,
       pOneMove: "",
       victoryStatus: victoryStatus
     });
     cookSet = true;
     playerNum = "player1";
     otherNum = "player2";
+    scoreTracker = [pOneWins];
   });
   
   $("#p2-set").click(function(event){
@@ -170,29 +171,36 @@ database.ref().on("value", function(snapshot){
     database.ref("player2").set({
       pTwoCook: true,
       pTwoWins: 0,
-      pTwoSet: true,
       pTwoMove: "",
       victoryStatus: victoryStatus
     });
     cookSet = true;
     playerNum = "player2";
     otherNum = "player1";
+    scoreTracker = [pTwoWins];
   });
 
   if(snapshot.child(playerNum).exists()){
     victoryStatus = snapshot.child(playerNum).val().victoryStatus;
-
-    if (victoryStatus === "victory"){
-      console.log("hooray!");
-    } else if (victoryStatus === "defeat"){
-      console.log("boo");
-    } else if (victoryStatus === "same"){
-      console.log("ehh");
-    };
   };
 
 
 });
+
+vicStatusChecker = function(){
+  if (victoryStatus === "victory"){
+    console.log("hooray!");
+    userScore++;
+    database.ref(playerNum).update({scoreTracker: userScore});
+    database.ref(playerNum).update({victoryStatus: ""});
+    guessed = false;
+    victoryStatus ="";
+  } else if (victoryStatus === "defeat"){
+    console.log("boo");
+  } else if (victoryStatus === "same"){
+    console.log("ehh");
+  };
+}
 
 document.onkeyup = function(event){
    
@@ -215,28 +223,27 @@ document.onkeyup = function(event){
 
         if(victory){
           victoryStatus = "victory";
+          userScore += 1;
           database.ref(playerNum).update({victoryStatus: victoryStatus});
+          database.ref(playerNum).update({scoreTracker: userScore});
           database.ref(otherNum).update({victoryStatus: "defeat"});
+          guessed = false;
+          database.ref(playerNum).update({victoryStatus: ""});
         } else if(defeat){
           victoryStatus = "defeat";
           database.ref(playerNum).update({victoryStatus: victoryStatus});
           database.ref(otherNum).update({victoryStatus: "victory"});
+          database.ref(playerNum).update({victoryStatus: ""});
         } else if(same){
           victoryStatus = "same";
           database.ref(playerNum).update({victoryStatus: victoryStatus});
           database.ref(otherNum).update({victoryStatus: victoryStatus});
+          database.ref(playerNum).update({victoryStatus: ""});
         };
       };
     };
 };
 
 
-// database.ref().set({
-//   currentUser: userId
-// });
-
-// database.ref(currentUser).push({
-//   userScore: userScore
-// });
 
 // $("#score-keeper").text(userScore);
