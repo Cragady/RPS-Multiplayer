@@ -13,26 +13,30 @@
 
 var userScore = "";
 var opponentScore = "";
+var opponentGuess;
 var playerOne = "Player 1";
 var playerTwo = "Player 2";
-var move1 = false;
-var move2 = false;
+var pOneMove;
+var pTwoMove;
 var pOneSet;
 var pOneCook = false;
 var pTwoSet;
 var pTwoCook = false;
 var cookSet;
 var gameStart = false;
-var move1 = 1;
+var victoryStatus = "";
+var playerNum;
+var otherNum;
+var guessed = false;
 
 var config = {
-    apiKey: "AIzaSyASnKUFaSBLwrLIJd4R5dNgYbNHf2jCJMk",
-    authDomain: "rps-handler.firebaseapp.com",
-    databaseURL: "https://rps-handler.firebaseio.com",
-    projectId: "rps-handler",
-    storageBucket: "rps-handler.appspot.com",
-    messagingSenderId: "458167033258"
-  };
+  apiKey: "AIzaSyASnKUFaSBLwrLIJd4R5dNgYbNHf2jCJMk",
+  authDomain: "rps-handler.firebaseapp.com",
+  databaseURL: "https://rps-handler.firebaseio.com",
+  projectId: "rps-handler",
+  storageBucket: "rps-handler.appspot.com",
+  messagingSenderId: "458167033258"
+};
   firebase.initializeApp(config);
 
 var database = firebase.database();
@@ -77,28 +81,40 @@ database.ref('player2').on('value', function(snapshot){
 
 database.ref().on("value", function(snapshot){
 
+  gameStart = snapshot.child('gameStatus').val().gameStart;
+  
+  
+  if(pOneCook === "1"){
+    opponentGuess = snapshot.child("player2").val().pTwoMove;
+  };
+
+  if(pTwoCook === "2"){
+    opponentGuess = snapshot.child("player1").val().pOneMove;
+  };
+
   if(snapshot.child('player1').exists() && snapshot.child('player2').exists()){
     gameStart = true;
     database.ref('gameStatus').set({
-      gameStart: gameStart
+      gameStart: true
     });
-  } else if(snapshot.child('gameStatus').val().gameStart === true){
-    $(window).on("unload", function(){
-      console.log("user disconnect");
-      gameStart = false;
-      database.child('gameStatus').set({
-        gameStart: gameStart
-      });
-      console.log(gameStart);
-    });
-    $(window).on("beforeunload", function(){
-      console.log("user disconnect");
-      gameStart = false;
-      database.child('gameStatus').set({
-        gameStart: gameStart
-      });
-      console.log(gameStart);
-    });
+  };
+  if(snapshot.child('gameStatus').exists()){
+    if(!snapshot.child('player1').exists() || !snapshot.child('player2').exists()){
+      if(snapshot.child('gameStatus').val().gameStart === true){
+        $(window).on("unload", function(){
+          gameStart = false;
+          database.ref('gameStatus').set({
+            gameStart: false
+          });
+        });
+        $(window).on("beforeunload", function(){
+          gameStart = false;
+          database.ref('gameStatus').set({
+            gameStart: false
+          });
+        });
+      };
+    };
     
   };
     
@@ -133,9 +149,13 @@ database.ref().on("value", function(snapshot){
     database.ref("player1").set({
       pOneCook: true,
       pOneWins: 0,
-      pOneSet: true
+      pOneSet: true,
+      pOneMove: "",
+      victoryStatus: victoryStatus
     });
     cookSet = true;
+    playerNum = "player1";
+    otherNum = "player2";
   });
   
   $("#p2-set").click(function(event){
@@ -150,17 +170,66 @@ database.ref().on("value", function(snapshot){
     database.ref("player2").set({
       pTwoCook: true,
       pTwoWins: 0,
-      pTwoSet: true
+      pTwoSet: true,
+      pTwoMove: "",
+      victoryStatus: victoryStatus
     });
     cookSet = true;
-  })
+    playerNum = "player2";
+    otherNum = "player1";
+  });
+
+  if(snapshot.child(playerNum).exists()){
+    victoryStatus = snapshot.child(playerNum).val().victoryStatus;
+
+    if (victoryStatus === "victory"){
+      console.log("hooray!");
+    } else if (victoryStatus === "defeat"){
+      console.log("boo");
+    } else if (victoryStatus === "same"){
+      console.log("ehh");
+    };
+  };
+
 
 });
 
-// document.onkeyup = function(event){
-//   var pOneGuess = event.key;
-//   var pTwoGuess = event.key;
-// }
+document.onkeyup = function(event){
+   
+    userGuess = event.key;
+    if(guessed === false){
+      if((userGuess === "r") || (userGuess === "p") || (userGuess === "s")){
+        guessed = true;
+        if (pOneCook === "1"){
+          pOneMove = userGuess;
+          database.ref("player1").update({pOneMove: userGuess});
+        }
+        if(pTwoCook === "2"){
+          pTwoMove = userGuess;
+          database.ref("player2").update({pTwoMove: userGuess});
+        }
+
+        var victory = ((userGuess === "r") && (opponentGuess === "s") || (userGuess === "s") && (opponentGuess === "p") || (userGuess === "p") && (opponentGuess === "r"));
+        var defeat = ((userGuess === "s") && (opponentGuess === "r") || (userGuess === "p") && (opponentGuess === "s") || (userGuess === "r") && (opponentGuess === "p"));
+        var same = ((userGuess === "r") && (opponentGuess === "r") || (userGuess === "s") && (opponentGuess === "s") || (userGuess === "p") && (opponentGuess === "p"));
+
+        if(victory){
+          victoryStatus = "victory";
+          database.ref(playerNum).update({victoryStatus: victoryStatus});
+          database.ref(otherNum).update({victoryStatus: "defeat"});
+        } else if(defeat){
+          victoryStatus = "defeat";
+          database.ref(playerNum).update({victoryStatus: victoryStatus});
+          database.ref(otherNum).update({victoryStatus: "victory"});
+        } else if(same){
+          victoryStatus = "same";
+          database.ref(playerNum).update({victoryStatus: victoryStatus});
+          database.ref(otherNum).update({victoryStatus: victoryStatus});
+        };
+      };
+    };
+};
+
 
 // database.ref().set({
 //   currentUser: userId
