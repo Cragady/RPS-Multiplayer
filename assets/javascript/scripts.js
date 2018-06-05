@@ -236,6 +236,7 @@ document.onkeyup = function(event){
           database.ref(playerNum).update({victoryStatus: victoryStatus});
           database.ref(otherNum).update({victoryStatus: victoryStatus});
         };
+        userGuess ="";
       };
     };
 };
