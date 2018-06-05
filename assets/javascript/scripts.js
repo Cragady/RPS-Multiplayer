@@ -27,6 +27,9 @@ var victoryStatus = "";
 var playerNum;
 var otherNum;
 var guessed = false;
+var userGuess;
+var pTwoWins;
+var pOneWins;
 
 var config = {
   apiKey: "AIzaSyASnKUFaSBLwrLIJd4R5dNgYbNHf2jCJMk",
@@ -117,7 +120,7 @@ database.ref().on("value", function(snapshot){
     
   };
     
-
+  
   if(pOneCook === "1"){
     $(window).on("unload", function(){
       database.ref("player1").set({});
@@ -136,6 +139,7 @@ database.ref().on("value", function(snapshot){
     });
   };
 
+  //initialize user as player1
   $("#p1-set").click(function(event){
     event.preventDefault();
     if(cookSet || pOneCook){
@@ -154,9 +158,11 @@ database.ref().on("value", function(snapshot){
     cookSet = true;
     playerNum = "player1";
     otherNum = "player2";
-    scoreTracker = [pOneWins];
+    scoreTracker = "pOneWins";
+    moveTracker = "pOneMove";
   });
   
+  //initialize user as player2
   $("#p2-set").click(function(event){
     event.preventDefault();
     if(cookSet || pTwoCook){
@@ -175,7 +181,8 @@ database.ref().on("value", function(snapshot){
     cookSet = true;
     playerNum = "player2";
     otherNum = "player1";
-    scoreTracker = [pTwoWins];
+    scoreTracker = "pTwoWins";
+    moveTracker = "pTwoMove";
   });
 
   if(snapshot.child(playerNum).exists()){
@@ -192,21 +199,40 @@ database.ref().on("value", function(snapshot){
 vicStatusChecker = function(){
   if (victoryStatus === "victory"){
     console.log("hooray!");
-    database.ref(playerNum).update({scoreTracker: userScore});
-    database.ref(playerNum).update({victoryStatus: ""});
-    guessed = false;
+    userScore++;
     victoryStatus ="";
+    userGuess = "";
+    guessed = false;
+    database.ref(playerNum).update({
+      [moveTracker]: userGuess,
+      [scoreTracker]: userScore,
+      victoryStatus: victoryStatus
+    });
   } else if (victoryStatus === "defeat"){
     console.log("boo");
+    victoryStatus ="";
+    userGuess = "";
+    guessed = false;
+    database.ref(playerNum).update({
+      [moveTracker]: userGuess,
+      victoryStatus: victoryStatus
+    });
   } else if (victoryStatus === "same"){
     console.log("ehh");
+    victoryStatus ="";
+    userGuess = "";
+    guessed = false;
+    database.ref(playerNum).update({
+      [moveTracker]: userGuess,
+      victoryStatus: victoryStatus
+    });
   };
 };
 
 document.onkeyup = function(event){
-   
-    userGuess = event.key;
+       
     if(guessed === false){
+      userGuess = event.key;
       if((userGuess === "r") || (userGuess === "p") || (userGuess === "s")){
         guessed = true;
         if (pOneCook === "1"){
@@ -224,7 +250,7 @@ document.onkeyup = function(event){
 
         if(victory){
           victoryStatus = "victory";
-          userScore++;
+          // userScore ++;
           database.ref(playerNum).update({victoryStatus: victoryStatus});
           database.ref(otherNum).update({victoryStatus: "defeat"});
         } else if(defeat){
@@ -234,7 +260,7 @@ document.onkeyup = function(event){
         } else if(same){
           victoryStatus = "same";
           database.ref(playerNum).update({victoryStatus: victoryStatus});
-          database.ref(otherNum).update({victoryStatus: victoryStatus});
+          database.ref(otherNum).update({victoryStatus: "same"});
         };
       };
     };
