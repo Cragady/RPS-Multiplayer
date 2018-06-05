@@ -90,19 +90,10 @@ database.ref().on("value", function(snapshot){
     });
   };
   if(snapshot.child('gameStatus').exists()){
-    if(!snapshot.child('player1').exists() || !snapshot.child('player2').exists()){
+    if((pOneCook === false) || (pTwoCook === false)){
       if(snapshot.child('gameStatus').val().gameStart === true){
-        $(window).on("unload", function(){
-          gameStart = false;
-          database.ref('gameStatus').update({
-            gameStart: false
-          });
-        });
-        $(window).on("beforeunload", function(){
-          gameStart = false;
-          database.ref('gameStatus').update({
-            gameStart: false
-          });
+        database.ref('gameStatus').update({
+          gameStart: false
         });
       };
     };
