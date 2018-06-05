@@ -1,15 +1,9 @@
-//use Firebase to keep track of wins/losses
-//maybe use Firebase to keep track of chat log too
-//set player 1 & 2 with firebase
+//maybe use Firebase to keep track of chat log too (probably not)
 //make a chat-box that operates very similarly to the battle-log from the rpg-game
-//set timers to keep round moving; auto-select for player if timer runs out
 //have a results page
-//have player Choose their handle
 //have page update when the player/opponent made choice
-//play again option
-//manage sessions to make sure there are only two connected at once
-//have it so multiple people can have matches
-//have option to face automatic process
+//have it so multiple people can have matches (maybe in the future)
+//have option to face automatic process (maybe in the future)
 
 var userScore = 0;
 var scoreTracker;
@@ -71,7 +65,8 @@ database.ref().on("value", function(snapshot){
 
   gameStart = snapshot.child('gameStatus').val().gameStart;
   
-  
+  /*the following two if statements gives the scripts
+  the other player's score to compare against*/
   if(pOneCook === "1"){
     opponentGuess = snapshot.child("player2").val().pTwoMove;
   };
@@ -79,7 +74,15 @@ database.ref().on("value", function(snapshot){
   if(pTwoCook === "2"){
     opponentGuess = snapshot.child("player1").val().pOneMove;
   };
+  /*End comparative variable set */
 
+  /*This next chunk of code is supposed to empty the player's
+  corresponding data tree on a reload and browser close 
+  event. it seems to work well with browser close, but not
+  so much on the reload event; reloading twice is necessary.
+  A future goal could be altering the cookies to keep track and
+  setting expirations on them, or deletion if another player pair
+  is made*/
   if(snapshot.child('player1').exists() && snapshot.child('player2').exists()){
     gameStart = true;
     database.ref('gameStatus').set({
@@ -103,6 +106,7 @@ database.ref().on("value", function(snapshot){
         });
       };
     };
+    /*End gameStart setter*/
     
   };
     
