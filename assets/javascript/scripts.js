@@ -66,21 +66,43 @@ database.ref().on("value", function(snapshot){
   };
   
   /*the following two if statements gives the scripts
-  the other player's score to compare against*/
+  the other player's score and moves to compare against*/
   if(pOneCook === "1"){
-    opponentGuess = snapshot.child("player2").val().pTwoMove;
+    if(snapshot.child("player2").exists()){
+      opponentGuess = snapshot.child("player2").val().pTwoMove;
+      opponentScore = snapshot.child("player2").val().pTwoWins;
+    };
   };
 
   if(pTwoCook === "2"){
-    opponentGuess = snapshot.child("player1").val().pOneMove;
+    if(snapshot.child("player1").exists()){
+      opponentGuess = snapshot.child("player1").val().pOneMove;
+      opponentScore = snapshot.child("player1").val().pOneWins;
+    };
   };
   /*End comparative variable set */
+  
+  if((snapshot.child("player2").exists()) && (pTwoCook === true)){
+    playerStatusSetter("#p2-status", opponentScore);
+  } else if(pTwoCook === false){
+    $("#p2-status").empty();
+  };
+  if(pOneCook === "1"){
+    playerStatusSetter("#p1-status", userScore, userGuess);
+  };
+  
+  if((snapshot.child("player1").exists()) && (pOneCook === true)){
+    playerStatusSetter("#p1-status", opponentScore);
+  } else if (pOneCook === false){
+    $("#p1-status").empty();
+  }
+  if(pTwoCook === "2"){
+    playerStatusSetter("#p2-status", userScore, userGuess);
+  };
 
   /*This next chunk of code is supposed to empty the player's
-  corresponding data tree on a reload and browser close 
-  event. it seems to work well with browser close, but not
-  so much on the reload event; reloading twice is necessary.
-  A future goal could be altering the cookies to keep track and
+  corresponding data tree on a reload and/or browser close 
+  event.A future goal could be altering the cookies to keep track and
   setting expirations on them, or deletion if another player pair
   is made*/
   if(snapshot.child('player1').exists() && snapshot.child('player2').exists()){
@@ -101,7 +123,8 @@ database.ref().on("value", function(snapshot){
     
   };
     
-  
+  /*the next two if statements deletes the player's data tree on 
+  browser close or refresh*/
   if(pOneCook === "1"){
     $(window).on("unload", function(){
       database.ref("player1").set({});
@@ -119,8 +142,10 @@ database.ref().on("value", function(snapshot){
       database.ref("player2").set({});
     });
   };
+  /*end portion that deletes player's data tree */
 
-  //initialize user as player1
+
+  //initialize user as player1 and sets appropriate scoring/set displays
   $("#p1-set").click(function(event){
     event.preventDefault();
     if(cookSet || pOneCook){
@@ -141,9 +166,10 @@ database.ref().on("value", function(snapshot){
     otherNum = "player2";
     scoreTracker = "pOneWins";
     moveTracker = "pOneMove";
+    playerStatusSetter("#p1-status", userScore);
   });
   
-  //initialize user as player2
+  //initialize user as player2 and sets appropriate scoring/set displays
   $("#p2-set").click(function(event){
     event.preventDefault();
     if(cookSet || pTwoCook){
@@ -208,6 +234,15 @@ vicStatusChecker = function(){
       victoryStatus: victoryStatus
     });
   };
+};
+
+playerStatusSetter = function(playTarget, playData, playMoveStatus){
+  $(playTarget).html("<div>Player Ready!</div> <div>Wins: " + playData + "</div>" + "<div class='self-move'></div>");
+  if(playMoveStatus !== undefined){
+
+    $(playTarget).find("div.self-move").html("Current Move: " + playMoveStatus);
+  }
+
 };
 
 document.onkeyup = function(event){
