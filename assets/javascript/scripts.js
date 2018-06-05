@@ -22,6 +22,8 @@ var guessed = false;
 var userGuess;
 var pTwoWins;
 var pOneWins;
+var textOut;
+var textIn;
 
 var config = {
   apiKey: "AIzaSyASnKUFaSBLwrLIJd4R5dNgYbNHf2jCJMk",
@@ -60,6 +62,14 @@ database.ref('player2').on('value', function(snapshot){
 });
 
 database.ref().on("value", function(snapshot){
+
+  if(snapshot.child("chatUpdate").exists()){
+    textOut = snapshot.child("chatUpdate").val().chat;
+    console.log(textOut);
+    database.ref("chatUpdate").update({
+      chat: ""
+    });
+  }
 
   if(snapshot.child('gameStatus').exists()){
     gameStart = snapshot.child('gameStatus').val().gameStart;
@@ -246,39 +256,62 @@ playerStatusSetter = function(playTarget, playData, playMoveStatus){
 };
 
 document.onkeyup = function(event){
-       
-    if(guessed === false){
-      userGuess = event.key;
-      if((userGuess === "r") || (userGuess === "p") || (userGuess === "s")){
-        guessed = true;
-        if (pOneCook === "1"){
-          pOneMove = userGuess;
-          database.ref("player1").update({pOneMove: userGuess});
-        }
-        if(pTwoCook === "2"){
-          pTwoMove = userGuess;
-          database.ref("player2").update({pTwoMove: userGuess});
-        }
+      
+  //setup for winner checking and setting victoryStatus
+  if(guessed === false){
+    userGuess = event.key;
+    if((userGuess === "r") || (userGuess === "p") || (userGuess === "s")){
+      guessed = true;
+      if (pOneCook === "1"){
+        pOneMove = userGuess;
+        database.ref("player1").update({pOneMove: userGuess});
+      }
+      if(pTwoCook === "2"){
+        pTwoMove = userGuess;
+        database.ref("player2").update({pTwoMove: userGuess});
+      }
 
-        var victory = ((userGuess === "r") && (opponentGuess === "s") || (userGuess === "s") && (opponentGuess === "p") || (userGuess === "p") && (opponentGuess === "r"));
-        var defeat = ((userGuess === "s") && (opponentGuess === "r") || (userGuess === "p") && (opponentGuess === "s") || (userGuess === "r") && (opponentGuess === "p"));
-        var same = ((userGuess === "r") && (opponentGuess === "r") || (userGuess === "s") && (opponentGuess === "s") || (userGuess === "p") && (opponentGuess === "p"));
+      var victory = ((userGuess === "r") && (opponentGuess === "s") || (userGuess === "s") && (opponentGuess === "p") || (userGuess === "p") && (opponentGuess === "r"));
+      var defeat = ((userGuess === "s") && (opponentGuess === "r") || (userGuess === "p") && (opponentGuess === "s") || (userGuess === "r") && (opponentGuess === "p"));
+      var same = ((userGuess === "r") && (opponentGuess === "r") || (userGuess === "s") && (opponentGuess === "s") || (userGuess === "p") && (opponentGuess === "p"));
 
-        if(victory){
-          victoryStatus = "victory";
-          database.ref(playerNum).update({victoryStatus: victoryStatus});
-          database.ref(otherNum).update({victoryStatus: "defeat"});
-        } else if(defeat){
-          victoryStatus = "defeat";
-          database.ref(playerNum).update({victoryStatus: victoryStatus});
-          database.ref(otherNum).update({victoryStatus: "victory"});
-        } else if(same){
-          victoryStatus = "same";
-          database.ref(playerNum).update({victoryStatus: victoryStatus});
-          database.ref(otherNum).update({victoryStatus: "same"});
-        };
+      if(victory){
+        victoryStatus = "victory";
+        database.ref(playerNum).update({victoryStatus: victoryStatus});
+        database.ref(otherNum).update({victoryStatus: "defeat"});
+      } else if(defeat){
+        victoryStatus = "defeat";
+        database.ref(playerNum).update({victoryStatus: victoryStatus});
+        database.ref(otherNum).update({victoryStatus: "victory"});
+      } else if(same){
+        victoryStatus = "same";
+        database.ref(playerNum).update({victoryStatus: victoryStatus});
+        database.ref(otherNum).update({victoryStatus: "same"});
       };
     };
+  };
 };
+
+document.onkeydown = function(eventTwo){
+  //setup for chatbox entry
+  key = eventTwo.which || eventTwo.keyCode;
+
+  if(key === 13){
+    eventTwo.preventDefault();
+    text = $("#text-input");
+    textIn = text.val().trim();
+    text.val("");
+    database.ref("chatUpdate").update({chat: textIn});
+    
+    
+  }
+};
+
+// database.ref("chatUpdate").on("value", function(snapshot){
+//   textOut = snapshot.val().chat;
+//   console.log(textOut);
+// });
+
+
 
 // $("#score-keeper").text(userScore);
