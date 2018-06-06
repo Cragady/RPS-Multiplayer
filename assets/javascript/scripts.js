@@ -254,7 +254,7 @@ playerStatusSetter = function(playTarget, playData, playMoveStatus){
   $(playTarget).html("<div>Player Ready!</div> <div>Wins: " + playData + "</div>" + "<div class='self-move'></div>");
   if(playMoveStatus !== undefined){
 
-    $(playTarget).find("div.self-move").html("Current Move: " + playMoveStatus);
+    $(playTarget).find("div.self-move").html("Make your move!");
   }
 
 };
