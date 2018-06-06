@@ -11,6 +11,14 @@ html, body{
     padding-bottom: 150px;
 }
 
+#chat-box{
+    min-height: 50px;
+    max-height: 200px;
+    overflow: auto;
+    font-size: 0.75em;
+    line-height: 0.75;
+}
+
 .footer{
     position: relative;
     margin-top: -150px;

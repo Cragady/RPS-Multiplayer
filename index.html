@@ -42,16 +42,17 @@
 
             <div id="move-used" class="col-12 text-center">
                 <button id="r" data-letter="r" data-word="Rock!">Rock!</button>
-                <button id="p" data-letter="p">Paper!</button>
-                <button id="s" data-letter="s">Scizzors!</button>
+                <button id="p" data-letter="p" data-word="Paper!">Paper!</button>
+                <button id="s" data-letter="s" data-word="Scissors!">Scissors!</button>
             </div>
 
-            <section class="form-group">
+            <section class="row container justify-content-center mx-auto">
                 <label for="chat-box">Chat Box &amp; Updates</label>
-                <select multiple class="form-control" id="chat-box">
+                <div class="form-control" id="chat-box">
 
-                </select>
-                <textarea class="form-control" id="text-input" rows="2"></textarea>
+                </div>
+                <textarea class="form-control" id="text-input" rows="2" placeholder="Press enter to chat"></textarea>
+                <p class="text-secondary font-italic">*Only set players can chat</p>
             </section>
 
 
