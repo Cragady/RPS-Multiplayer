@@ -102,7 +102,7 @@ database.ref().on("value", function(snapshot){
     $("#p2-status").empty();
   };
   if(pOneCook === "1"){
-    playerStatusSetter("#p1-status", userScore, userGuess);
+    playerStatusSetter("#p1-status", userScore, "Go!");
   };
   
   if((snapshot.child("player1").exists()) && (pOneCook === true)){
@@ -111,7 +111,7 @@ database.ref().on("value", function(snapshot){
     $("#p1-status").empty();
   }
   if(pTwoCook === "2"){
-    playerStatusSetter("#p2-status", userScore, userGuess);
+    playerStatusSetter("#p2-status", userScore, "Go!");
   };
 
   /*This next chunk of code is supposed to empty the player's
