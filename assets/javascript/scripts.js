@@ -165,7 +165,6 @@ database.ref().on("value", function(snapshot){
     if(cookSet || pOneCook){
       return;
     };
-    console.log("clicked");
     document.cookie = "player=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
     document.cookie = "player=1";
     pOneCook = readCookie("player");
@@ -189,7 +188,6 @@ database.ref().on("value", function(snapshot){
     if(cookSet || pTwoCook){
       return;
     };
-    console.log("clicked");
     document.cookie = "player=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
     document.cookie = "player=2";
     pTwoCook = readCookie("player");
@@ -219,7 +217,7 @@ database.ref().on("value", function(snapshot){
 
 vicStatusChecker = function(){
   if (victoryStatus === "victory"){
-    console.log("hooray!");
+    console.log(userGuess);
     userScore++;
     victoryStatus ="";
     userGuess = "";
@@ -230,7 +228,7 @@ vicStatusChecker = function(){
       victoryStatus: victoryStatus
     });
   } else if (victoryStatus === "defeat"){
-    console.log("boo");
+    console.log(userGuess);
     victoryStatus ="";
     userGuess = "";
     guessed = false;
@@ -239,7 +237,7 @@ vicStatusChecker = function(){
       victoryStatus: victoryStatus
     });
   } else if (victoryStatus === "same"){
-    console.log("ehh");
+    console.log(userGuess);
     victoryStatus ="";
     userGuess = "";
     guessed = false;
@@ -265,20 +263,25 @@ $("button").click(function(){
   //look into using buttons instead for user/opponent guess
   if((guessed === false) && (cookSet === true)){
     userGuess = $(this).attr("data-letter");
+    var spelledGuess = $(this).attr("data-word");
+    console.log(spelledGuess);
     if((userGuess === "r") || (userGuess === "p") || (userGuess === "s")){
       guessed = true;
+      var victory = ((userGuess === "r") && (opponentGuess === "s") || (userGuess === "s") && (opponentGuess === "p") || (userGuess === "p") && (opponentGuess === "r"));
+      var defeat = ((userGuess === "s") && (opponentGuess === "r") || (userGuess === "p") && (opponentGuess === "s") || (userGuess === "r") && (opponentGuess === "p"));
+      var same = ((userGuess === "r") && (opponentGuess === "r") || (userGuess === "s") && (opponentGuess === "s") || (userGuess === "p") && (opponentGuess === "p"));
+
       if (pOneCook === "1"){
         pOneMove = userGuess;
         database.ref("player1").update({pOneMove: userGuess});
+        upSetter = $("<option>").text("You picked: " + spelledGuess);
+        $("#chat-box").append(upSetter);
       }
       if(pTwoCook === "2"){
         pTwoMove = userGuess;
         database.ref("player2").update({pTwoMove: userGuess});
       }
 
-      var victory = ((userGuess === "r") && (opponentGuess === "s") || (userGuess === "s") && (opponentGuess === "p") || (userGuess === "p") && (opponentGuess === "r"));
-      var defeat = ((userGuess === "s") && (opponentGuess === "r") || (userGuess === "p") && (opponentGuess === "s") || (userGuess === "r") && (opponentGuess === "p"));
-      var same = ((userGuess === "r") && (opponentGuess === "r") || (userGuess === "s") && (opponentGuess === "s") || (userGuess === "p") && (opponentGuess === "p"));
 
       if(victory){
         victoryStatus = "victory";
