@@ -259,17 +259,12 @@ playerStatusSetter = function(playTarget, playData, playMoveStatus){
 
 };
 
-document.onkeyup = function(event){
+$("button").click(function(){
       
   //setup for winner checking and setting victoryStatus
   //look into using buttons instead for user/opponent guess
-  if(guessed === false){
-    if(event.target.nodeName.toLowerCase() === "input"){
-      console.log("blocked");
-      return;
-    };
-    console.log("not");
-    userGuess = event.key;
+  if((guessed === false) && (cookSet === true)){
+    userGuess = $(this).attr("data-letter");
     if((userGuess === "r") || (userGuess === "p") || (userGuess === "s")){
       guessed = true;
       if (pOneCook === "1"){
@@ -300,7 +295,7 @@ document.onkeyup = function(event){
       };
     };
   };
-};
+});
 
 document.onkeydown = function(eventTwo){
 
