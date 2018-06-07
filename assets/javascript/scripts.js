@@ -271,12 +271,12 @@ playerStatusSetter = function(playTarget, playData, playDataLoss, playMoveStatus
 newPelmSetter = function(pelmHere, upHere, textHere){
   if((pelmHere !== null) && (textHere !== "")){
     pelmHere = $("<p>");
-    pelmHere.attr("class", "border-light border-bottom");
+    pelmHere.attr("class", "border-light border-bottom p-1 text-cust-color");
     pelmHere.text(textHere);
     $("#chat-box").prepend(pelmHere);
   }else if(upHere !== null){
     upHere = $("<p>");
-    upHere.attr("class", "border-bottom bg-light");
+    upHere.attr("class", "border-bottom text-success");
     upHere.text("You picked: " + textHere + "!");
     $("#chat-box").prepend(upHere);
   };
@@ -284,7 +284,7 @@ newPelmSetter = function(pelmHere, upHere, textHere){
 
 updateVicStatChat = function(newDivHere, textUp){
   newDivHere = $("<p>");
-  newDivHere.attr("class", "border-bottom bg-light");
+  newDivHere.attr("class", "border-bottom text-info");
   newDivHere.text("You " + textUp + " using " + spelledGuess + " against " + otherNum + "'s " + opGuessUpdate + "!");
   $("#chat-box").prepend(newDivHere);
 }

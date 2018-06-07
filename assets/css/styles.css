@@ -4,6 +4,10 @@ html, body{
 
 #wrap{
     min-height: 100%;
+    background-image: url(../images/roshambo.jpg);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    overflow: none;
 }
 
 #main{
@@ -11,12 +15,31 @@ html, body{
     padding-bottom: 150px;
 }
 
+.our-house-in-the-middle-of-our-house{
+    background: rgba(116, 115, 115, 0.438);
+}
+
+#chat-use-notice{
+    background: rgba(255, 255, 255, 0.733);
+}
+
+label{
+    background: rgba(221, 220, 220, 0.63);
+}
+
+#jumbo-target{
+    background: rgba(232, 236, 239, 0.438);
+}
+
 #chat-box{
     min-height: 50px;
     max-height: 200px;
     overflow: auto;
     font-size: 0.75em;
-    line-height: 0.75;
+}
+
+.text-cust-color{
+    background: #2831b233;
 }
 
 .border-bottom{

@@ -11,11 +11,11 @@
 </head>
 <body>
     <div id="wrap">
-        <div id="main">
+        <div id="main" class="p-0 mx-5 our-house-in-the-middle-of-our-house">
 
 
             <header>
-                <div id="" class="jumbotron text-center mx-5 my-2">
+                <div id="jumbo-target" class="jumbotron text-center mx-5 my-2">
                     <h1>RPS Versus!</h1>
                     <h3>An online, interactive, rock paper scissors game!</h3>
                 </div>
@@ -27,34 +27,31 @@
             
 
             <div class="container">
-            <div class="row">
-            <section id="user-choice" class="col-auto col-6 text-center">
-                <button id="p1-set">Player 1</button>
-                <div id="p1-status"></div>
-            </section>
-            
-            <section id="opponent-choice" class="col-auto col-6 text-center">
-                <button id="p2-set">Player 2</button>
-                <div id="p2-status"></div>
-            </section>
-            </div>
+                <div class="row">
+                    <section id="user-choice" class="col-auto col-6 text-center">
+                        <button id="p1-set" class="btn">Player 1</button>
+                        <div id="p1-status" class="text-white"></div>
+                    </section>
+                    
+                    <section id="opponent-choice" class="col-auto col-6 text-center">
+                        <button id="p2-set" class="btn">Player 2</button>
+                        <div id="p2-status" class="text-white"></div>
+                    </section>
+                </div>
             </div>
 
             <div id="move-used" class="col-12 text-center">
-                <button id="r" data-letter="r" data-word="rock">Rock!</button>
-                <button id="p" data-letter="p" data-word="paper">Paper!</button>
-                <button id="s" data-letter="s" data-word="scissors">Scissors!</button>
+                <button id="r" class="btn" data-letter="r" data-word="rock">Rock!</button>
+                <button id="p" class="btn" data-letter="p" data-word="paper">Paper!</button>
+                <button id="s" class="btn" data-letter="s" data-word="scissors">Scissors!</button>
             </div>
 
             <section class="row container justify-content-center mx-auto">
                 <label for="chat-box">Chat Box &amp; Updates</label>
-                <div class="form-control" id="chat-box">
-
-                </div>
+                <div class="form-control" id="chat-box"></div>
                 <textarea class="form-control" id="text-input" rows="2" placeholder="Press enter to chat"></textarea>
-                <p class="text-secondary font-italic">*Only set players can chat</p>
+                <p id="chat-use-notice" class="text-secondary font-italic">*Only set players can chat</p>
             </section>
-
 
         </div>
     </div>
