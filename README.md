@@ -8,25 +8,25 @@ Two users connect and pick either player1 or player2 with a button click. When t
 
  This project does not currently have the capability to:
  
- * Connect multiple sessions of two. 
- * * Possibly look in to giving auth tokens for these sessions, with an overhaul to the firebase code.
+* Connect multiple sessions of two. 
+  * Possibly look in to giving auth tokens for these sessions, with an overhaul to the firebase code.
 
  * Have player data persistence
- * * Auth tokens assigned to usernames could fix this
+   * Auth tokens assigned to usernames could fix this
 
  * Have viewers of active sessions.
- * * Different auth tokens for users viewing, instead of a player token.
+   * Different auth tokens for users viewing, instead of a player token.
  
  * Display the chat to viewers of said session.
 
  * Some instances of redundant code and messy code
- * * I need to look into cleaning up for this problem
+   * I need to look into cleaning up for this problem
 
 A current problem:
 
  * Sometimes the database isn't correctly updated of player disconnect, and will affect if a player can be set
- * * Further testing showed interaction with database even though cookie isn't set with local browser path, this list item may not be accurate with the problem, but it brings to light that furthur coding is needed to prevent a browser with no cookie writing to database.
- * * Further testing required
+   * Further testing showed interaction with database even though cookie isn't set with local browser path, this list item may not be accurate with the problem, but it brings to light that furthur coding is needed to prevent a browser with no cookie writing to database.
+   * Further testing required
 
 
 **Where to Start Contributing**<hr>
