@@ -1,7 +1,3 @@
-//maybe use Firebase to keep track of chat log too (probably not)
-//make a chat-box that operates very similarly to the battle-log from the rpg-game
-//have a results page
-//have page update when the player/opponent made choice
 //have it so multiple people can have matches (maybe in the future)
 //have option to face automatic process (maybe in the future)
 
