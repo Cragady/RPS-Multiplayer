@@ -38,11 +38,15 @@ var config = {
 
 var database = firebase.database();
 
+
+//cookie reader
 function readCookie(a) {
   var b = document.cookie.match('(^|;)\\s*' + a + '\\s*=\\s*([^;]+)');
   return b ? b.pop() : '';
 }
 
+/*The next two database.ref() statements sets variables off of
+cookies existing in both the database and user browser */
 database.ref('player1').on('value', function(snapshot){
     if(snapshot.child("pOneCook").exists() && (pOneCook === false)){
         pOneCook = snapshot.val().pOneCook;
@@ -62,8 +66,14 @@ database.ref('player2').on('value', function(snapshot){
   };
 });
 
+
+
+
 database.ref().on("value", function(snapshot){
 
+  /*This portion utilizes the newPelmSetter function to write
+   to the chat log. Variables are checked in an if statement to 
+   ensure that only set players can use and see the text logs*/
   if(cookSet === true){
     if(snapshot.child("chatUpdate").exists()){
       textOut = snapshot.child("chatUpdate").val().chat;
@@ -100,6 +110,11 @@ database.ref().on("value", function(snapshot){
   };
   /*End comparative variable set */
   
+
+  /*This next portion uses local variables that are set locally
+  and on the database to let playerStatusSetter know what to write
+  for the stats in the user pages.
+   */
   if((snapshot.child("player2").exists()) && (pTwoCook === true)){
     playerStatusSetter("#p2-status", opponentScore, opponentLosses);
   } else if(pTwoCook === false){
@@ -137,8 +152,6 @@ database.ref().on("value", function(snapshot){
         });
       };
     };
-    /*End gameStart setter*/
-    
   };
     
   /*the next two if statements deletes the player's data tree on 
@@ -163,12 +176,14 @@ database.ref().on("value", function(snapshot){
   /*end portion that deletes player's data tree */
 
 
-  //initialize user as player1 and sets appropriate scoring/set displays
+  /*initialize user as player1 and sets appropriate scoring/set displays
+  using playerStatusSetter*/
   $("#p1-set").click(function(event){
     event.preventDefault();
     if(cookSet || pOneCook){
       return;
     };
+    $(this).addClass("btn-success");
     document.cookie = "player=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
     document.cookie = "player=1";
     pOneCook = readCookie("player");
@@ -194,6 +209,7 @@ database.ref().on("value", function(snapshot){
     if(cookSet || pTwoCook){
       return;
     };
+    $(this).addClass("btn-success");
     document.cookie = "player=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
     document.cookie = "player=2";
     pTwoCook = readCookie("player");
@@ -223,6 +239,8 @@ database.ref().on("value", function(snapshot){
 
 });
 
+/*updates database and resets variables for continuous 
+function and score tracking*/
 vicStatusChecker = function(){
   var whatev;
   if (victoryStatus === "victory"){
@@ -259,6 +277,7 @@ vicStatusChecker = function(){
   };
 };
 
+//playerStatusSetter set
 playerStatusSetter = function(playTarget, playData, playDataLoss, playMoveStatus){
   $(playTarget).html("<div>Player Ready!</div> <div>Wins: " + playData + "</div> <div>Losses: " + playDataLoss + "<div class='self-move'></div>");
   if(playMoveStatus !== undefined){
@@ -268,6 +287,8 @@ playerStatusSetter = function(playTarget, playData, playDataLoss, playMoveStatus
 
 };
 
+/*newPelmSetter is used for updating the chat-box
+with user input, and updates on the moves used*/
 newPelmSetter = function(pelmHere, upHere, textHere){
   if((pelmHere !== null) && (textHere !== "")){
     pelmHere = $("<p>");
@@ -282,6 +303,7 @@ newPelmSetter = function(pelmHere, upHere, textHere){
   };
 };
 
+//updates players on their win/loss/tie status
 updateVicStatChat = function(newDivHere, textUp){
   newDivHere = $("<p>");
   newDivHere.attr("class", "border-bottom text-info");
