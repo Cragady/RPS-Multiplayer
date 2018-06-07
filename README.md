@@ -31,4 +31,3 @@ A current problem:
 **Where to Start Contributing**<hr>
 
 If you so wish to contribute, the basic utilizations of the code blocks and functions are outlined by comments. If a specific function can be improved, searching may be easier to do with how I structured the commenting.
-
