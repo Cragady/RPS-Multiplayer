@@ -352,16 +352,16 @@ document.onkeydown = function(eventTwo){
   if(key === 13){
     eventTwo.preventDefault();
     text = $("#text-input");
-    textIn = text.val().trim();
-    if(pOneCook === "1"){
-      textIn = "P1:  " + textIn;
-    }
-    if(pTwoCook === "2"){
-      textIn = "P2:  " + textIn;
-    }
-    text.val("");
-    database.ref("chatUpdate").update({chat: textIn});
-    
-    
+    if(text.val() !== ""){
+      textIn = text.val().trim();
+      if(pOneCook === "1"){
+        textIn = "P1:  " + textIn;
+      }
+      if(pTwoCook === "2"){
+        textIn = "P2:  " + textIn;
+      }
+      text.val("");
+      database.ref("chatUpdate").update({chat: textIn});
+    };
   }
 };
