@@ -6,9 +6,13 @@
 //have option to face automatic process (maybe in the future)
 
 var userScore = 0;
+var userLosses = 0;
+var spelledGuess;
 var scoreTracker;
 var opponentScore = 0;
+var opponentLosses = 0;
 var opponentGuess;
+var opGuessUpdate;
 var pOneMove;
 var pTwoMove;
 var pOneCook = false;
@@ -85,6 +89,8 @@ database.ref().on("value", function(snapshot){
     if(snapshot.child("player2").exists()){
       opponentGuess = snapshot.child("player2").val().pTwoMove;
       opponentScore = snapshot.child("player2").val().pTwoWins;
+      opGuessUpdate = snapshot.child("player2").val().moveUpdater;
+      opponentLosses = snapshot.child("player2").val().pTwoLosses;
     };
   };
 
@@ -92,26 +98,28 @@ database.ref().on("value", function(snapshot){
     if(snapshot.child("player1").exists()){
       opponentGuess = snapshot.child("player1").val().pOneMove;
       opponentScore = snapshot.child("player1").val().pOneWins;
+      opGuessUpdate = snapshot.child("player1").val().moveUpdater;
+      opponentLosses = snapshot.child("player1").val().pOneLosses;
     };
   };
   /*End comparative variable set */
   
   if((snapshot.child("player2").exists()) && (pTwoCook === true)){
-    playerStatusSetter("#p2-status", opponentScore);
+    playerStatusSetter("#p2-status", opponentScore, opponentLosses);
   } else if(pTwoCook === false){
     $("#p2-status").empty();
   };
   if(pOneCook === "1"){
-    playerStatusSetter("#p1-status", userScore, "Go!");
+    playerStatusSetter("#p1-status", userScore, userLosses, "Go!");
   };
   
   if((snapshot.child("player1").exists()) && (pOneCook === true)){
-    playerStatusSetter("#p1-status", opponentScore);
+    playerStatusSetter("#p1-status", opponentScore, opponentLosses);
   } else if (pOneCook === false){
     $("#p1-status").empty();
   }
   if(pTwoCook === "2"){
-    playerStatusSetter("#p2-status", userScore, "Go!");
+    playerStatusSetter("#p2-status", userScore, userLosses, "Go!");
   };
 
   /*This next chunk of code is supposed to empty the player's
@@ -171,6 +179,7 @@ database.ref().on("value", function(snapshot){
     database.ref("player1").set({
       pOneCook: true,
       pOneWins: 0,
+      pOneLosses: 0,
       pOneMove: "",
       victoryStatus: victoryStatus
     });
@@ -178,8 +187,9 @@ database.ref().on("value", function(snapshot){
     playerNum = "player1";
     otherNum = "player2";
     scoreTracker = "pOneWins";
+    lossTracker = "pOneLosses";
     moveTracker = "pOneMove";
-    playerStatusSetter("#p1-status", userScore);
+    playerStatusSetter("#p1-status", userScore, userLosses);
   });
   
   //initialize user as player2 and sets appropriate scoring/set displays
@@ -194,6 +204,7 @@ database.ref().on("value", function(snapshot){
     database.ref("player2").set({
       pTwoCook: true,
       pTwoWins: 0,
+      pTwoLosses: 0,
       pTwoMove: "",
       victoryStatus: victoryStatus
     });
@@ -201,6 +212,7 @@ database.ref().on("value", function(snapshot){
     playerNum = "player2";
     otherNum = "player1";
     scoreTracker = "pTwoWins";
+    lossTracker = "pTwoLosses";
     moveTracker = "pTwoMove";
   });
 
@@ -216,8 +228,9 @@ database.ref().on("value", function(snapshot){
 });
 
 vicStatusChecker = function(){
+  var whatev;
   if (victoryStatus === "victory"){
-    console.log(userGuess);
+    updateVicStatChat(whatev, "won");
     userScore++;
     victoryStatus ="";
     userGuess = "";
@@ -228,16 +241,18 @@ vicStatusChecker = function(){
       victoryStatus: victoryStatus
     });
   } else if (victoryStatus === "defeat"){
-    console.log(userGuess);
+    updateVicStatChat(whatev, "lost");
+    userLosses++;
     victoryStatus ="";
     userGuess = "";
     guessed = false;
     database.ref(playerNum).update({
       [moveTracker]: userGuess,
+      [lossTracker]: userLosses,
       victoryStatus: victoryStatus
     });
   } else if (victoryStatus === "same"){
-    console.log(userGuess);
+    updateVicStatChat(whatev, "tied");
     victoryStatus ="";
     userGuess = "";
     guessed = false;
@@ -248,8 +263,8 @@ vicStatusChecker = function(){
   };
 };
 
-playerStatusSetter = function(playTarget, playData, playMoveStatus){
-  $(playTarget).html("<div>Player Ready!</div> <div>Wins: " + playData + "</div>" + "<div class='self-move'></div>");
+playerStatusSetter = function(playTarget, playData, playDataLoss, playMoveStatus){
+  $(playTarget).html("<div>Player Ready!</div> <div>Wins: " + playData + "</div> <div>Losses: " + playDataLoss + "<div class='self-move'></div>");
   if(playMoveStatus !== undefined){
 
     $(playTarget).find("div.self-move").html("Make your move!");
@@ -266,18 +281,24 @@ newPelmSetter = function(pelmHere, upHere, textHere){
   }else if(upHere !== null){
     upHere = $("<p>");
     upHere.attr("class", "border-bottom bg-light");
-    upHere.text("You picked: " + textHere);
+    upHere.text("You picked: " + textHere + "!");
     $("#chat-box").prepend(upHere);
   };
 };
 
+updateVicStatChat = function(newDivHere, textUp){
+  newDivHere = $("<p>");
+  newDivHere.attr("class", "border-bottom bg-light");
+  newDivHere.text("You " + textUp + " using " + spelledGuess + " against " + otherNum + "'s " + opGuessUpdate + "!");
+  $("#chat-box").prepend(newDivHere);
+}
+
 $("button").click(function(){
       
   //setup for winner checking and setting victoryStatus
-  //look into using buttons instead for user/opponent guess
   if((guessed === false) && (cookSet === true)){
     userGuess = $(this).attr("data-letter");
-    var spelledGuess = $(this).attr("data-word");
+    spelledGuess = $(this).attr("data-word");
     if((userGuess === "r") || (userGuess === "p") || (userGuess === "s")){
       guessed = true;
       var victory = ((userGuess === "r") && (opponentGuess === "s") || (userGuess === "s") && (opponentGuess === "p") || (userGuess === "p") && (opponentGuess === "r"));
@@ -286,13 +307,19 @@ $("button").click(function(){
 
       if (pOneCook === "1"){
         pOneMove = userGuess;
-        database.ref("player1").update({pOneMove: userGuess});
+        database.ref("player1").update({
+          pOneMove: userGuess,
+          moveUpdater: spelledGuess
+        });
         var upSetter;
         newPelmSetter(null, upSetter, spelledGuess);
       }
       if(pTwoCook === "2"){
         pTwoMove = userGuess;
-        database.ref("player2").update({pTwoMove: userGuess});
+        database.ref("player2").update({
+          pTwoMove: userGuess,
+          moveUpdater: spelledGuess
+        });
         var upSetter;
         newPelmSetter(null, upSetter, spelledGuess);
       }
@@ -326,7 +353,6 @@ document.onkeydown = function(eventTwo){
     eventTwo.preventDefault();
     text = $("#text-input");
     textIn = text.val().trim();
-    console.log(textIn);
     if(pOneCook === "1"){
       textIn = "P1:  " + textIn;
     }
@@ -339,11 +365,3 @@ document.onkeydown = function(eventTwo){
     
   }
 };
-// database.ref("chatUpdate").on("value", function(snapshot){
-//   textOut = snapshot.val().chat;
-//   console.log(textOut);
-// });
-
-
-
-// $("#score-keeper").text(userScore);
