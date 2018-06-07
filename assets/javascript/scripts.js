@@ -67,10 +67,8 @@ database.ref().on("value", function(snapshot){
   if(cookSet === true){
     if(snapshot.child("chatUpdate").exists()){
       textOut = snapshot.child("chatUpdate").val().chat;
-      newPelm = $("<p>");
-      newPelm.attr("class", "border-light border-bottom")
-      newPelm.text(textOut);
-      $("#chat-box").prepend(newPelm);
+      var newPelm;
+      newPelmSetter(newPelm, null, textOut);
       database.ref("chatUpdate").update({
         chat: ""
       });
@@ -259,6 +257,20 @@ playerStatusSetter = function(playTarget, playData, playMoveStatus){
 
 };
 
+newPelmSetter = function(pelmHere, upHere, textHere){
+  if((pelmHere !== null) && (textHere !== "")){
+    pelmHere = $("<p>");
+    pelmHere.attr("class", "border-light border-bottom");
+    pelmHere.text(textHere);
+    $("#chat-box").prepend(pelmHere);
+  }else if(upHere !== null){
+    upHere = $("<p>");
+    upHere.attr("class", "border-bottom bg-light");
+    upHere.text("You picked: " + textHere);
+    $("#chat-box").prepend(upHere);
+  };
+};
+
 $("button").click(function(){
       
   //setup for winner checking and setting victoryStatus
@@ -266,7 +278,6 @@ $("button").click(function(){
   if((guessed === false) && (cookSet === true)){
     userGuess = $(this).attr("data-letter");
     var spelledGuess = $(this).attr("data-word");
-    console.log("var spelledGuess: " + spelledGuess);
     if((userGuess === "r") || (userGuess === "p") || (userGuess === "s")){
       guessed = true;
       var victory = ((userGuess === "r") && (opponentGuess === "s") || (userGuess === "s") && (opponentGuess === "p") || (userGuess === "p") && (opponentGuess === "r"));
@@ -276,18 +287,14 @@ $("button").click(function(){
       if (pOneCook === "1"){
         pOneMove = userGuess;
         database.ref("player1").update({pOneMove: userGuess});
-        upSetter = $("<p>");
-        upSetter.attr("class", "border-bottom bg-light")
-        upSetter.text("You picked: " + spelledGuess);
-        $("#chat-box").prepend(upSetter);
+        var upSetter;
+        newPelmSetter(null, upSetter, spelledGuess);
       }
       if(pTwoCook === "2"){
         pTwoMove = userGuess;
         database.ref("player2").update({pTwoMove: userGuess});
-        upSetter = $("<p>");
-        upSetter.attr("class", "border-bottom bg-light")
-        upSetter.text("You picked: " + spelledGuess);
-        $("#chat-box").prepend(upSetter);
+        var upSetter;
+        newPelmSetter(null, upSetter, spelledGuess);
       }
 
 
@@ -319,6 +326,7 @@ document.onkeydown = function(eventTwo){
     eventTwo.preventDefault();
     text = $("#text-input");
     textIn = text.val().trim();
+    console.log(textIn);
     if(pOneCook === "1"){
       textIn = "P1:  " + textIn;
     }

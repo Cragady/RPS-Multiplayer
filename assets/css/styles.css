@@ -19,6 +19,10 @@ html, body{
     line-height: 0.75;
 }
 
+.border-bottom{
+    margin-bottom: 8px;
+}
+
 .footer{
     position: relative;
     margin-top: -150px;
