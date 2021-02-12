@@ -8,6 +8,12 @@ Two users connect and pick either player1 or player2 with a button click. When t
 
 **Things to Improve**<hr>
 
+NEEDS REFACTORING:
+
+There is an unholy amount of global variables used.
+
+Change out the api key, and serve out application with a node-server that supplies the api key using a '.env' file or using another method. Might need to scrub git's history to completely remove any reference to the key.
+
  This project does not currently have the capability to:
  
 * Connect multiple sessions of two. 
