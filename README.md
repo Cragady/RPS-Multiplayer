@@ -35,8 +35,3 @@ A current problem:
  * Sometimes the database isn't correctly updated of player disconnect, and will affect if a player can be set
    * Further testing showed interaction with database even though cookie isn't set with local browser path, this list item may not be accurate with the problem, but it brings to light that furthur coding is needed to prevent a browser with no cookie writing to database.
    * Further testing required
-
-
-**Where to Start Contributing**<hr>
-
-If you so wish to contribute, the basic utilizations of the code blocks and functions are outlined by comments. If a specific function can be improved, searching may be easier to do with how I structured the commenting.
